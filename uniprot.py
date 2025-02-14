@@ -1,15 +1,15 @@
 import requests
 
 
-inEnzymeName = 'Protein tyrosine kinase 2-beta'
+inEnzymeName = 'Fyn'
 inOrganism = 'human'
 inGetAASequence = False
 
 
-def searchUniprot(query, limit=5):
+def searchUniprot(enzyme, limit=5):
     url = 'https://rest.uniprot.org/uniprotkb/search'
     params = {
-        'query': f'{query}',
+        'query': enzyme,
         'format': 'json',
         'size': limit}
 
@@ -28,7 +28,7 @@ def searchUniprot(query, limit=5):
 
 
 # Search for enzyme
-searchResults = searchUniprot(inEnzymeName)
+searchResults = searchUniprot(enzyme=inEnzymeName)
 if searchResults['results']:
     if inOrganism == '' or inOrganism is None:
         for entry in searchResults.get("results", []):
@@ -37,7 +37,7 @@ if searchResults['results']:
             proteinName = entry['proteinDescription']['recommendedName']['fullName']
             accession = entry['primaryAccession']
             urlUniprot = f"https://www.uniprot.org/uniprotkb/{accession}"
-            print(f"     Name: {proteinName}\n"
+            print(f"     Name: {proteinName['value']}\n"
                   f"     Uniprot URL: {urlUniprot}\n")
 
             if inGetAASequence:
@@ -55,7 +55,6 @@ if searchResults['results']:
                         start = int(feature["location"]["start"]["value"]) - 1
                         end = int(feature["location"]["end"]["value"])
                         domainSequence = sequence[start:end]
-
                         print(f"     Domain: "
                               f"{feature['description']} ({start + 1}-{end})"
                               f"{domainSequence}")
@@ -68,7 +67,7 @@ if searchResults['results']:
                 proteinName = entry['proteinDescription']['recommendedName']['fullName']
                 accession = entry['primaryAccession']
                 urlUniprot = f"https://www.uniprot.org/uniprotkb/{accession}"
-                print(f"     Name: {proteinName}\n"
+                print(f"     Name: {proteinName['value']}\n"
                       f"     Uniprot URL: {urlUniprot}\n")
 
                 if inGetAASequence:
@@ -86,7 +85,6 @@ if searchResults['results']:
                             start = int(feature["location"]["start"]["value"]) - 1
                             end = int(feature["location"]["end"]["value"])
                             domainSequence = sequence[start:end]
-
                             print(f"     Domain: "
                                   f"{feature['description']} ({start + 1}-{end})"
                                   f"{domainSequence}")
